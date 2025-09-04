@@ -10,8 +10,6 @@
       font-family: Arial, sans-serif;
       text-align: center;
       color: orange;
-      margin: 0;
-      padding: 0;
     }
     .logo h1 {
       font-size: 28px;
@@ -22,83 +20,66 @@
     .container {
       margin: 30px auto;
       background: #142d4c;
-      padding: 30px;
+      padding: 40px;
       border-radius: 10px;
-      width: 90%;
-      max-width: 650px;
+      width: 650px;
       color: white;
       box-shadow: 0 0 15px rgba(0,0,0,0.5);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .container:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 25px rgba(255, 100, 0, 0.5);
+      position: relative;
     }
     .row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 15px 0;
+      margin: 20px 0;
       font-size: 18px;
-      flex-wrap: wrap;
     }
     label {
       flex: 1;
       text-align: left;
-      margin-bottom: 8px;
     }
     input {
       width: 150px;
-      max-width: 100%;
       text-align: right;
       padding: 8px;
       border-radius: 5px;
       border: none;
       font-size: 16px;
     }
-    .button-row {
+    .circle-row {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 20px;
-      gap: 20px;
-      flex-wrap: wrap;
+      margin-top: 30px;
+      gap: 30px;
     }
-    button {
-      background: orange;
-      border: none;
-      padding: 12px 30px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: bold;
-      color: #142d4c;
-      transition: all 0.3s ease;
-    }
-    button:hover {
-      background: #ff6600;
-      transform: scale(1.05);
-    }
-    .side-img {
-      width: 70px;
-      height: 70px;
+    .circle-link img {
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid red;
-      transition: transform 0.3s ease;
+      transition: transform 0.2s ease;
     }
-    .side-img:hover {
-      transform: rotate(10deg) scale(1.1);
+    .circle-link img:hover {
+      transform: scale(1.1);
+    }
+    .side-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid red;
     }
     #resultado {
-      margin-top: 25px;
+      margin-top: 30px;
       font-weight: bold;
       color: #00ff99;
       white-space: pre-line;
       font-size: 18px;
     }
     #grafica-container {
-      margin-top: 30px;
+      margin-top: 40px;
       background: #0b1a33;
       padding: 20px;
       border-radius: 12px;
@@ -114,57 +95,59 @@
   <div class="container">
     <div class="row">
       <label for="victorias">Victorias (bajas enemigas)</label>
-      <input type="number" id="victorias" value="0" aria-label="Victorias (bajas enemigas)">
+      <input type="number" id="victorias" value="0">
     </div>
     <div class="row">
       <label for="derrotas">Derrotas (bajas propias)</label>
-      <input type="number" id="derrotas" value="0" aria-label="Derrotas (bajas propias)">
+      <input type="number" id="derrotas" value="0">
     </div>
     <div class="row">
       <label for="objetivo">KD objetivo</label>
-      <input type="number" step="0.01" id="objetivo" value="2.00" aria-label="KD objetivo">
+      <input type="number" step="0.01" id="objetivo" value="2.00">
     </div>
 
-    <!-- Botón con imágenes -->
-    <div class="button-row">
-      <img src="demonio.jpg" alt="Demonio" class="side-img">
-      <button onclick="calcularKD()">Calcular</button>
-      <img src="payaso.jpg" alt="Payaso" class="side-img">
-    </div>
+    <img src="LOL1.jpg" alt="Demonio" class="side-img">
+    <button onclick="calcularKD()">Calcular</button>
+    <img src="LOL2.jpg" alt="Payaso" class="side-img">
 
-    <!-- Gráfica -->
+    <div id="resultado"></div>
+
     <div id="grafica-container">
       <canvas id="graficaKD"></canvas>
     </div>
 
-    <!-- Enlaces sociales -->
-    <div class="button-row">
-      <a href="https://chat.whatsapp.com/CrkaMuvOLl58gmgZXBVmDh?mode=ems_copy_t" target="_blank" class="social-btn">
-        <img src="whatsapp.png" alt="WhatsApp"> WhatsApp
+    <!-- Íconos en círculo -->
+    <div class="circle-row">
+      <a href="https://chat.whatsapp.com/CrkaMuvOLl58gmgZXBVmDh?mode=ems_copy_t" target="_blank" class="circle-link">
+        <img src="whatsapp.png" alt="WhatsApp">
       </a>
-      <a href="https://discord.gg/WWjSD5ETUC" target="_blank" class="social-btn">
-        <img src="discord.webp" alt="Discord"> Discord
+      <a href="https://discord.gg/WWjSD5ETUC" target="_blank" class="circle-link">
+        <img src="discord.webp" alt="Discord">
+      </a>
+      <a href="#" target="_blank" class="circle-link">
+        <img src="comunidad.jpg" alt="Comunidad">
       </a>
     </div>
-
-    <!-- Imagen comunidad -->
-    <img src="comunidad.jpg" alt="Comunidad" class="comunidad-img">
   </div>
 
   <script>
-    // Plugin para texto en el centro
     const centerText = {
       id: 'centerText',
       beforeDraw(chart) {
         const { width, height } = chart;
         const ctx = chart.ctx;
         ctx.restore();
-        ctx.font = "28px Arial";
+
+        const fontSize = 30;
+        ctx.font = fontSize + "px Arial";
         ctx.textBaseline = "middle";
+
         ctx.fillStyle = chart.config.data.centerColor || "#ffffff";
+
         const text = chart.config.data.centerText || "";
         const textX = Math.round((width - ctx.measureText(text).width) / 2);
         const textY = height / 2;
+
         ctx.fillText(text, textX, textY);
         ctx.save();
       }
@@ -177,8 +160,7 @@
         labels: ['Victorias (Bajas enemigas)', 'Derrotas (Bajas propias)'],
         datasets: [{
           data: [0, 0],
-          backgroundColor: ['#00ff99', '#ff4444'],
-          hoverOffset: 8
+          backgroundColor: ['#00ff99', '#ff4444']
         }],
         centerText: "KD: 0",
         centerColor: "#ffffff"
@@ -188,24 +170,16 @@
         plugins: {
           legend: {
             labels: { color: 'white' }
-          },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => `${ctx.label}: ${ctx.raw}`
-            }
           }
-        },
-        animation: {
-          animateScale: true
         }
       },
       plugins: [centerText]
     });
 
     function calcularKD() {
-      let victorias = parseInt(document.getElementById('victorias').value) || 0;
-      let derrotas = parseInt(document.getElementById('derrotas').value) || 0;
-      let objetivo = parseFloat(document.getElementById('objetivo').value) || 1;
+      let victorias = parseInt(document.getElementById('victorias').value);
+      let derrotas = parseInt(document.getElementById('derrotas').value);
+      let objetivo = parseFloat(document.getElementById('objetivo').value);
 
       if (derrotas === 0) {
         document.getElementById('resultado').innerText = "⚠️ Las derrotas deben ser mayores que 0.";
@@ -220,13 +194,11 @@
       if (victoriasNecesarias <= 0) {
         mensaje += `✅ ¡Ya superaste el KD objetivo! 🎉`;
       } else {
-        let progreso = Math.min((kdActual / objetivo) * 100, 100);
-        mensaje += `🔥 Necesitas ${victoriasNecesarias} victorias adicionales.\n📈 Progreso: ${progreso.toFixed(1)}%`;
+        mensaje += `🔥 Necesitas ${victoriasNecesarias} victorias adicionales para llegar al KD objetivo.`;
       }
 
       document.getElementById('resultado').innerText = mensaje;
 
-      // Actualizar gráfica
       grafica.data.datasets[0].data = [victorias, derrotas];
       grafica.data.centerText = `KD: ${kdActual.toFixed(2)}`;
       grafica.data.centerColor = (kdActual >= objetivo) ? "#00ff99" : "#ff4444";
@@ -236,6 +208,7 @@
 
 </body>
 </html>
+
 
 
 
