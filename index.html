@@ -113,10 +113,10 @@
 
     <div class="circle-row">
       <a href="https://chat.whatsapp.com/CrkaMuvOLl58gmgZXBVmDh?mode=ems_copy_t" target="_blank" class="circle-link">
-        <img src="WhatsApp.png" alt="WhatsApp">
+        <img src="whassap.jpeg" alt="WhatsApp">
       </a>
       <a href="https://discord.gg/WWjSD5ETUC" target="_blank" class="circle-link">
-        <img src="discordia.webp" alt="Discord">
+        <img src="discordia20.jpg" alt="Discord">
       </a>
       <a href="#" target="_blank" class="circle-link">
         <img src="comunidad.jpg" alt="Comunidad">
@@ -126,6 +126,31 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    // Plugin para mostrar texto en el centro del gráfico
+    const centerTextPlugin = {
+      id: 'centerText',
+      afterDraw(chart) {
+        if (chart.config.options.plugins.centerText.display !== false) {
+          const ctx = chart.ctx;
+          const width = chart.width;
+          const height = chart.height;
+          ctx.restore();
+
+          const fontSize = (height / 10).toFixed(2);
+          ctx.font = fontSize + "px Arial";
+          ctx.textBaseline = "middle";
+          ctx.fillStyle = "#FFD700";
+
+          const text = chart.config.options.plugins.centerText.text;
+          const textX = Math.round((width - ctx.measureText(text).width) / 2);
+          const textY = height / 2;
+
+          ctx.fillText(text, textX, textY);
+          ctx.save();
+        }
+      }
+    };
+
     function calcularKD() {
       let victorias = parseInt(document.getElementById("victorias").value);
       let derrotas = parseInt(document.getElementById("derrotas").value);
@@ -135,7 +160,6 @@
       let kd = 0;
 
       if (!isNaN(victorias) && !isNaN(derrotas) && derrotas > 0) {
-        // Caso normal: victorias y derrotas dadas
         kd = victorias / derrotas;
         mensaje = "📊 KD actual: " + kd.toFixed(2);
 
@@ -149,12 +173,10 @@
         }
 
       } else if (!isNaN(victorias) && !isNaN(objetivo) && objetivo > 0) {
-        // Faltan derrotas: calcularlas
         derrotas = victorias / objetivo;
         mensaje = "⚠️ Para un KD de " + objetivo + ", con " + victorias + " victorias necesitas " + Math.ceil(derrotas) + " derrotas.";
 
       } else if (!isNaN(derrotas) && !isNaN(objetivo) && objetivo > 0) {
-        // Faltan victorias: calcularlas
         victorias = objetivo * derrotas;
         mensaje = "⚠️ Para un KD de " + objetivo + ", con " + derrotas + " derrotas necesitas " + Math.ceil(victorias) + " victorias.";
 
@@ -164,7 +186,6 @@
 
       document.getElementById("resultado").innerHTML = mensaje;
 
-      // Actualizar gráfico
       const ctx = document.getElementById("grafico").getContext("2d");
 
       if (window.miGrafico) {
@@ -186,15 +207,19 @@
               labels: {
                 color: "#FFD700"
               }
+            },
+            centerText: {
+              display: true,
+              text: "KD: " + (kd ? kd.toFixed(2) : "0")
             }
           }
-        }
+        },
+        plugins: [centerTextPlugin]
       });
     }
   </script>
 </body>
 </html>
-
 
 
 
