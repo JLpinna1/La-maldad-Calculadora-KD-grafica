@@ -25,7 +25,7 @@
       padding: 20px;
       margin: 20px auto;
       border-radius: 10px;
-      max-width: 600px;
+      max-width: 1100px;
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
 
@@ -42,6 +42,7 @@
       border-radius: 5px;
       border: none;
       text-align: center;
+      width: 150px;
     }
 
     .circle-row {
@@ -51,15 +52,16 @@
       margin: 20px 0;
     }
 
-    .circle-link img {
-      width: 50px;
-      height: 50px;
+    .circle-link img, .side-img {
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       border: 2px solid #FFD700;
       transition: transform 0.2s, box-shadow 0.2s;
+      object-fit: cover;
     }
 
-    .circle-link img:hover {
+    .circle-link img:hover, .side-img:hover {
       transform: scale(1.1);
       box-shadow: 0 0 10px #FFD700;
     }
@@ -80,19 +82,34 @@
       color: #2b0d0d;
     }
 
-    canvas {
-      margin-top: 20px;
-    }
-
     #resultado {
       margin-top: 15px;
       font-size: 18px;
+      text-align: left;
+      white-space: pre-line;
+    }
+
+    .graficas {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin-top: 30px;
+      gap: 20px;
+    }
+
+    .grafica-box {
+      flex: 1;
+      min-width: 400px;
+      background: #1e0a0a;
+      padding: 20px;
+      border-radius: 12px;
     }
   </style>
 </head>
 <body>
   <h1>La Maldad — Calculadora de KD</h1>
   <div class="container">
+    <!-- Inputs KD -->
     <label for="victorias">Victorias (bajas enemigas)</label>
     <input type="number" id="victorias" placeholder="ej: 2000" min="0">
 
@@ -102,32 +119,46 @@
     <label for="objetivo">KD objetivo</label>
     <input type="number" step="0.01" id="objetivo" placeholder="ej: 2.00" min="0">
 
+    <!-- Inputs Partidas -->
+    <label for="jugadas">Partidas jugadas</label>
+    <input type="number" id="jugadas" placeholder="ej: 100" min="0">
+
+    <label for="ganadas">Partidas ganadas</label>
+    <input type="number" id="ganadas" placeholder="ej: 50" min="0">
+
     <div class="circle-row">
-      <img src="demonio.jpg" alt="Demonio" width="60" height="60">
-      <button onclick="calcularKD()">Calcular</button>
-      <img src="payaso.jpg" alt="Payaso" width="60" height="60">
+      <img src="demonio.jpg" alt="Demonio" class="side-img">
+      <button onclick="calcularTodo()">Calcular</button>
+      <img src="payaso.jpg" alt="Payaso" class="side-img">
     </div>
 
     <p id="resultado">KD: 0</p>
-    <canvas id="grafico" width="400" height="400"></canvas>
 
-<div class="circle-row">
-  <a href="https://chat.whatsapp.com/CrkaMuvOLl58gmgZXBVmDh?mode=ems_copy_t" target="_blank" class="circle-link">
-    <img src="whatsapp-logo-icon-green-button-vector-50156552.webp" alt="WhatsApp">
-  </a>
-  <a href="https://discord.gg/WWjSD5ETUC" target="_blank" class="circle-link">
-    <img src="images.png" alt="Discord">
-  </a>
-  <a href="#" target="_blank" class="circle-link">
-    <img src="comunidad.jpg" alt="Comunidad">
-  </a>
-</div>
+    <div class="graficas">
+      <div class="grafica-box">
+        <canvas id="graficaKD"></canvas>
+      </div>
+      <div class="grafica-box">
+        <canvas id="graficaPartidas"></canvas>
+      </div>
+    </div>
 
+    <div class="circle-row">
+      <a href="https://chat.whatsapp.com/CrkaMuvOLl58gmgZXBVmDh?mode=ems_copy_t" target="_blank" class="circle-link">
+        <img src="whatsapp-logo-icon-green-button-vector-50156552.webp" alt="WhatsApp">
+      </a>
+      <a href="https://discord.gg/WWjSD5ETUC" target="_blank" class="circle-link">
+        <img src="images.png" alt="Discord">
+      </a>
+      <a href="#" target="_blank" class="circle-link">
+        <img src="comunidad.jpg" alt="Comunidad">
+      </a>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // Plugin para mostrar texto en el centro del gráfico
+    // Plugin texto en centro
     const centerTextPlugin = {
       id: 'centerText',
       afterDraw(chart) {
@@ -136,92 +167,105 @@
           const width = chart.width;
           const height = chart.height;
           ctx.restore();
-
-          const fontSize = (height / 10).toFixed(2);
+          const fontSize = 24;
           ctx.font = fontSize + "px Arial";
           ctx.textBaseline = "middle";
           ctx.fillStyle = "#FFD700";
-
           const text = chart.config.options.plugins.centerText.text;
           const textX = Math.round((width - ctx.measureText(text).width) / 2);
           const textY = height / 2;
-
           ctx.fillText(text, textX, textY);
           ctx.save();
         }
       }
     };
 
-    function calcularKD() {
+    let graficaKD;
+    let graficaPartidas;
+
+    function calcularTodo() {
       let victorias = parseInt(document.getElementById("victorias").value);
       let derrotas = parseInt(document.getElementById("derrotas").value);
       let objetivo = parseFloat(document.getElementById("objetivo").value);
+      let jugadas = parseInt(document.getElementById("jugadas").value);
+      let ganadas = parseInt(document.getElementById("ganadas").value);
 
       let mensaje = "";
-      let kd = 0;
 
+      // KD
       if (!isNaN(victorias) && !isNaN(derrotas) && derrotas > 0) {
-        kd = victorias / derrotas;
-        mensaje = "📊 KD actual: " + kd.toFixed(2);
+        let kd = victorias / derrotas;
+        mensaje += "📊 KD actual: " + kd.toFixed(2) + "\n";
 
         if (!isNaN(objetivo) && objetivo > 0) {
           if (kd >= objetivo) {
-            mensaje += "<br>✅ ¡Ya superaste el KD objetivo!";
+            mensaje += "✅ ¡Ya superaste el KD objetivo!\n";
           } else {
             let victoriasNecesarias = (objetivo * derrotas) - victorias;
-            mensaje += "<br>🔥 Necesitas " + Math.ceil(victoriasNecesarias) + " victorias adicionales para llegar al KD objetivo.";
+            mensaje += "🔥 Necesitas " + Math.ceil(victoriasNecesarias) + " victorias adicionales para llegar al KD objetivo.\n";
           }
         }
 
-      } else if (!isNaN(victorias) && !isNaN(objetivo) && objetivo > 0) {
-        derrotas = victorias / objetivo;
-        mensaje = "⚠️ Para un KD de " + objetivo + ", con " + victorias + " victorias necesitas " + Math.ceil(derrotas) + " derrotas.";
-
-      } else if (!isNaN(derrotas) && !isNaN(objetivo) && objetivo > 0) {
-        victorias = objetivo * derrotas;
-        mensaje = "⚠️ Para un KD de " + objetivo + ", con " + derrotas + " derrotas necesitas " + Math.ceil(victorias) + " victorias.";
-
-      } else {
-        mensaje = "⚠️ Ingresa al menos dos valores para calcular.";
-      }
-
-      document.getElementById("resultado").innerHTML = mensaje;
-
-      const ctx = document.getElementById("grafico").getContext("2d");
-
-      if (window.miGrafico) {
-        window.miGrafico.destroy();
-      }
-
-      window.miGrafico = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: ["Victorias", "Derrotas"],
-          datasets: [{
-            data: [victorias || 0, derrotas || 0],
-            backgroundColor: ["#FFD700", "#8B0000"]
-          }]
-        },
-        options: {
-          plugins: {
-            legend: {
-              labels: {
-                color: "#FFD700"
-              }
-            },
-            centerText: {
-              display: true,
-              text: "KD: " + (kd ? kd.toFixed(2) : "0")
+        const ctxKD = document.getElementById("graficaKD").getContext("2d");
+        if (graficaKD) graficaKD.destroy();
+        graficaKD = new Chart(ctxKD, {
+          type: "doughnut",
+          data: {
+            labels: ["Victorias", "Derrotas"],
+            datasets: [{
+              data: [victorias, derrotas],
+              backgroundColor: ["#FFD700", "#8B0000"]
+            }]
+          },
+          options: {
+            plugins: {
+              legend: { labels: { color: "#FFD700" } },
+              centerText: { display: true, text: "KD: " + kd.toFixed(2) }
             }
-          }
-        },
-        plugins: [centerTextPlugin]
-      });
+          },
+          plugins: [centerTextPlugin]
+        });
+      }
+
+      // Partidas
+      if (!isNaN(jugadas) && !isNaN(ganadas) && jugadas > 0) {
+        let perdidas = jugadas - ganadas;
+        if (perdidas < 0) perdidas = 0;
+        let winRate = (ganadas / jugadas) * 100;
+        let winRatio = perdidas > 0 ? (ganadas / perdidas) : Infinity;
+
+        mensaje += "\n🎮 Partidas jugadas: " + jugadas +
+                   "\n✅ Ganadas: " + ganadas +
+                   "\n❌ Perdidas: " + perdidas +
+                   "\n📊 WinRate: " + winRate.toFixed(1) + "%" +
+                   "\n⚖️ WinRatio: " + (isFinite(winRatio) ? winRatio.toFixed(2) : "∞");
+
+        const ctxPartidas = document.getElementById("graficaPartidas").getContext("2d");
+        if (graficaPartidas) graficaPartidas.destroy();
+        graficaPartidas = new Chart(ctxPartidas, {
+          type: "doughnut",
+          data: {
+            labels: ["Ganadas", "Perdidas"],
+            datasets: [{
+              data: [ganadas, perdidas],
+              backgroundColor: ["#00ccff", "#ff9933"]
+            }]
+          },
+          options: {
+            plugins: {
+              legend: { labels: { color: "#FFD700" } },
+              centerText: { display: true, text: "% " + winRate.toFixed(1) }
+            }
+          },
+          plugins: [centerTextPlugin]
+        });
+      }
+
+      document.getElementById("resultado").innerText = mensaje;
     }
   </script>
 </body>
 </html>
-
 
 
 
