@@ -6,26 +6,25 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      background-color: #2b0d0d; /* 🔹 Fondo rojo oscuro */
+      background-color: #2b0d0d;
       font-family: Arial, sans-serif;
       text-align: center;
-      color: #f5deb3; /* 🔹 Trigo */
+      color: #f5deb3;
     }
     .logo h1 {
       font-size: 28px;
-      color: #ffd700; /* 🔹 Dorado */
+      color: #ffd700;
       text-shadow: 0 0 12px #ffd700;
       margin: 30px 0 10px 0;
     }
     .container {
       margin: 30px auto;
-      background: #401010; /* 🔹 Rojo más claro que el fondo */
+      background: #401010;
       padding: 40px;
       border-radius: 10px;
       width: 650px;
-      color: #f5deb3; /* 🔹 Texto trigo */
+      color: #f5deb3;
       box-shadow: 0 0 15px rgba(0,0,0,0.6);
-      position: relative;
     }
     .row {
       display: flex;
@@ -47,7 +46,7 @@
       font-size: 16px;
     }
     button {
-      background: #b8860b; /* 🔹 Dorado oscuro */
+      background: #b8860b;
       border: none;
       padding: 12px 30px;
       border-radius: 8px;
@@ -58,26 +57,26 @@
       transition: background 0.3s ease;
     }
     button:hover {
-      background: #daa520; /* 🔹 Goldenrod */
+      background: #daa520;
     }
     .side-img {
       width: 80px;
       height: 80px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #ffd700; /* 🔹 Marco dorado */
+      border: 2px solid #ffd700;
       pointer-events: none;
     }
     #resultado {
       margin-top: 30px;
       font-weight: bold;
-      color: #ffd700; /* 🔹 Dorado */
+      color: #ffd700;
       white-space: pre-line;
       font-size: 18px;
     }
     #grafica-container {
       margin-top: 40px;
-      background: #2b0d0d; /* 🔹 Fondo gráfico */
+      background: #2b0d0d;
       padding: 20px;
       border-radius: 12px;
     }
@@ -89,11 +88,13 @@
       gap: 30px;
     }
     .circle-link img {
-      width: 50px;
-      height: 50px;
+      display: block;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #ffd700; /* 🔹 Dorado */
+      border: 2px solid #ffd700;
+      background: #000;
       transition: transform 0.2s ease;
     }
     .circle-link img:hover {
@@ -110,41 +111,39 @@
   <div class="container">
     <div class="row">
       <label for="victorias">Victorias (bajas enemigas)</label>
-      <input type="number" id="victorias" value="0">
+      <input type="number" id="victorias" placeholder="ej: 2000">
     </div>
     <div class="row">
       <label for="derrotas">Derrotas (bajas propias)</label>
-      <input type="number" id="derrotas" value="0">
+      <input type="number" id="derrotas" placeholder="ej: 1000">
     </div>
     <div class="row">
       <label for="objetivo">KD objetivo</label>
-      <input type="number" step="0.01" id="objetivo" value="2.00">
+      <input type="number" step="0.01" id="objetivo" placeholder="ej: 2.00">
     </div>
 
-    <!-- Botón con imágenes a los lados -->
     <img src="demonio.jpg" alt="Demonio" class="side-img">
     <button onclick="calcularKD()">Calcular</button>
     <img src="payaso.jpg" alt="Payaso" class="side-img">
 
     <div id="resultado"></div>
 
-    <!-- Gráfica -->
     <div id="grafica-container">
       <canvas id="graficaKD"></canvas>
     </div>
 
-    <!-- Íconos en círculo -->
-<div class="circle-row">
-  <a href="https://chat.whatsapp.com/CrkaMuvOLl58gmgZXBVmDh?mode=ems_copy_t" target="_blank" class="circle-link">
-    <img src="WhatsApp.png" alt="WhatsApp">
-  </a>
-  <a href="https://discord.gg/WWjSD5ETUC" target="_blank" class="circle-link">
-    <img src="discordia.webp" alt="Discord">
-  </a>
-  <a href="#" target="_blank" class="circle-link">
-    <img src="comunidad.jpg" alt="Comunidad">
-  </a>
-</div>
+    <div class="circle-row">
+      <a href="https://chat.whatsapp.com/CrkaMuvOLl58gmgZXBVmDh?mode=ems_copy_t" target="_blank" class="circle-link">
+        <img src="./WhatsApp.png" alt="WhatsApp">
+      </a>
+      <a href="https://discord.gg/WWjSD5ETUC" target="_blank" class="circle-link">
+        <img src="./discordia.webp" alt="Discord">
+      </a>
+      <a href="#" target="_blank" class="circle-link">
+        <img src="./comunidad.jpg" alt="Comunidad">
+      </a>
+    </div>
+  </div>
 
   <script>
     const centerText = {
@@ -153,17 +152,13 @@
         const { width, height } = chart;
         const ctx = chart.ctx;
         ctx.restore();
-
         const fontSize = 30;
         ctx.font = fontSize + "px Arial";
         ctx.textBaseline = "middle";
-
-        ctx.fillStyle = chart.config.data.centerColor || "#ffd700"; // 🔹 Dorado
-
+        ctx.fillStyle = chart.config.data.centerColor || "#ffd700";
         const text = chart.config.data.centerText || "";
         const textX = Math.round((width - ctx.measureText(text).width) / 2);
         const textY = height / 2;
-
         ctx.fillText(text, textX, textY);
         ctx.save();
       }
@@ -173,10 +168,10 @@
     let grafica = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Victorias (Bajas enemigas)', 'Derrotas (Bajas propias)'],
+        labels: ['Victorias', 'Derrotas'],
         datasets: [{
           data: [0, 0],
-          backgroundColor: ['#ffd700', '#8b0000'] // 🔹 Dorado y rojo oscuro
+          backgroundColor: ['#ffd700', '#8b0000']
         }],
         centerText: "KD: 0",
         centerColor: "#ffd700"
@@ -185,7 +180,7 @@
         responsive: true,
         plugins: {
           legend: {
-            labels: { color: '#f5deb3' } // 🔹 Texto trigo
+            labels: { color: '#f5deb3' }
           }
         }
       },
@@ -193,38 +188,59 @@
     });
 
     function calcularKD() {
-      let victorias = parseInt(document.getElementById('victorias').value);
-      let derrotas = parseInt(document.getElementById('derrotas').value);
-      let objetivo = parseFloat(document.getElementById('objetivo').value);
+      let victorias = document.getElementById('victorias').value ? parseInt(document.getElementById('victorias').value) : null;
+      let derrotas = document.getElementById('derrotas').value ? parseInt(document.getElementById('derrotas').value) : null;
+      let objetivo = document.getElementById('objetivo').value ? parseFloat(document.getElementById('objetivo').value) : null;
 
-      if (derrotas === 0) {
-        document.getElementById('resultado').innerText = "⚠️ Las derrotas deben ser mayores que 0.";
-        return;
-      }
+      let mensaje = "";
 
-      let kdActual = victorias / derrotas;
-      let victoriasNecesarias = Math.ceil((objetivo * derrotas) - victorias);
-
-      let mensaje = `📊 KD actual: ${kdActual.toFixed(2)}\n`;
-
-      if (victoriasNecesarias <= 0) {
-        mensaje += `✅ ¡Ya superaste el KD objetivo! 🎉`;
+      if (victorias !== null && derrotas !== null && objetivo === null) {
+        if (derrotas === 0) {
+          mensaje = "⚠️ Las derrotas deben ser mayores que 0.";
+        } else {
+          let kdActual = victorias / derrotas;
+          mensaje = `📊 KD actual: ${kdActual.toFixed(2)}`;
+          actualizarGrafica(victorias, derrotas, kdActual);
+        }
+      } else if (victorias !== null && objetivo !== null && derrotas === null) {
+        let derrotasCalc = Math.ceil(victorias / objetivo);
+        mensaje = `🧮 Con ${victorias} victorias y KD objetivo ${objetivo},\n👉 deberías tener aprox. ${derrotasCalc} derrotas.`;
+        actualizarGrafica(victorias, derrotasCalc, objetivo);
+      } else if (derrotas !== null && objetivo !== null && victorias === null) {
+        let victoriasCalc = Math.ceil(objetivo * derrotas);
+        mensaje = `🧮 Con ${derrotas} derrotas y KD objetivo ${objetivo},\n👉 necesitas al menos ${victoriasCalc} victorias.`;
+        actualizarGrafica(victoriasCalc, derrotas, objetivo);
+      } else if (victorias !== null && derrotas !== null && objetivo !== null) {
+        if (derrotas === 0) {
+          mensaje = "⚠️ Las derrotas deben ser mayores que 0.";
+        } else {
+          let kdActual = victorias / derrotas;
+          let victoriasNecesarias = Math.ceil((objetivo * derrotas) - victorias);
+          mensaje = `📊 KD actual: ${kdActual.toFixed(2)}\n`;
+          if (victoriasNecesarias <= 0) {
+            mensaje += `✅ ¡Ya superaste el KD objetivo! 🎉`;
+          } else {
+            mensaje += `🔥 Necesitas ${victoriasNecesarias} victorias adicionales para llegar al KD objetivo.`;
+          }
+          actualizarGrafica(victorias, derrotas, kdActual);
+        }
       } else {
-        mensaje += `🔥 Necesitas ${victoriasNecesarias} victorias adicionales para llegar al KD objetivo.`;
+        mensaje = "⚠️ Ingresa al menos 2 valores para calcular el tercero.";
       }
 
       document.getElementById('resultado').innerText = mensaje;
+    }
 
+    function actualizarGrafica(victorias, derrotas, kdActual) {
       grafica.data.datasets[0].data = [victorias, derrotas];
       grafica.data.centerText = `KD: ${kdActual.toFixed(2)}`;
-      grafica.data.centerColor = (kdActual >= objetivo) ? "#ffd700" : "#8b0000";
+      grafica.data.centerColor = "#ffd700";
       grafica.update();
     }
   </script>
 
 </body>
 </html>
-
 
 
 
